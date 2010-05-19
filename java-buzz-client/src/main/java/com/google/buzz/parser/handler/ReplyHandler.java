@@ -68,7 +68,7 @@ public class ReplyHandler
     public void endElement( String uri, String name, String qName )
         throws SAXException
     {
-        if ( REPLY.equals( name ) )
+        if ( REPLY.equals( qName ) )
         {
             stopHandlingEvents();
             parentHandler.endElement( uri, name, qName );

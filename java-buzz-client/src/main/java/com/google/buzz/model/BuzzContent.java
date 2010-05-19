@@ -11,7 +11,7 @@ public class BuzzContent
     /**
      * The content itself
      */
-    private String content;
+    private String text;
 
     /**
      * The content type
@@ -21,17 +21,17 @@ public class BuzzContent
     /**
      * @return the content
      */
-    public String getContent()
+    public String getText()
     {
-        return content;
+        return text;
     }
 
     /**
-     * @param content the content to set
+     * @param text the content to set
      */
-    public void setContent( String content )
+    public void setText( String text )
     {
-        this.content = content;
+        this.text = text;
     }
 
     /**
@@ -71,7 +71,7 @@ public class BuzzContent
         StringBuilder sb = new StringBuilder();
         String newIndent = indent + "\t";
         sb.append( indent + "BuzzContent:" );
-        sb.append( newIndent + "Content: " + content );
+        sb.append( newIndent + "Text: " + text );
         sb.append( newIndent + "Type: " + type );
         return sb.toString();
     }

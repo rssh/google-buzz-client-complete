@@ -10,15 +10,14 @@ import com.google.buzz.exception.BuzzParsingException;
 import com.google.buzz.exception.BuzzValidationException;
 import com.google.buzz.model.BuzzContent;
 import com.google.buzz.model.BuzzFeedEntry;
-import com.google.buzz.model.BuzzLink;
 
 /**
- * This example class demonstrates how to use the <b>Buzz.java</b> API to create a post with a link
- * on Google Buzz.
+ * This example class demonstrates how to use the <b>Buzz.java</b> API to create a post comment on
+ * Google Buzz.
  * 
  * @author roberto.estivill
  */
-public class PostActivityWithLink
+public class PostActivityComment
 {
     /**
      * The consumer application key for OAuth.
@@ -37,14 +36,14 @@ public class PostActivityWithLink
     public static String userId;
 
     /**
-     * The content of the post activity
+     * The id of the activity to be commented
      */
-    public static String content;
+    private static String activityId;
 
     /**
-     * The link to be attached in the post activity
+     * The content of the comment
      */
-    public static String link;
+    public static String comment;
 
     /**
      * Example main method
@@ -54,8 +53,8 @@ public class PostActivityWithLink
      *            <li>Consumer Key</li>
      *            <li>Consumer Secret</li>
      *            <li>User Id</li>
-     *            <li>Post content</li>
-     *            <li>Post link</li>
+     *            <li>Activity id to be commented</li>
+     *            <li>Post comment</li>
      *            </ul>
      * @throws BuzzIOException if any IO error occurs ( networking ).
      * @throws BuzzAuthenticationException if any OAuth error occurs
@@ -81,8 +80,8 @@ public class PostActivityWithLink
         consumerKey = args[0];
         consumerSecret = args[1];
         userId = args[2];
-        content = args[3];
-        link = args[4];
+        activityId = args[3];
+        comment = args[4];
 
         /**
          * Create a new instance of the API
@@ -114,27 +113,19 @@ public class PostActivityWithLink
          * Create the content of the post
          */
         BuzzContent buzzContent = new BuzzContent();
-        buzzContent.setText( content );
-        buzzContent.setType( "text" );
+        buzzContent.setText( comment );
 
         /**
-         * Create the link that is going to be included in the post.
+         * Execute API method to post an entry.
          */
-        BuzzLink buzzLink = new BuzzLink();
-        buzzLink.setHref( link );
-        buzzLink.setRel( "Google Buzz Api" );
-        buzzLink.setType( BuzzLink.Type.TEXT );
-
-        /**
-         * Execute API method to post an entry with a link.
-         */
-        BuzzFeedEntry entry = buzz.createPost( userId, buzzContent, buzzLink );
+        BuzzFeedEntry entry = buzz.createComment( userId, activityId, buzzContent );
 
         /**
          * Print results
          */
-        System.out.println( "Entry created: " );
-        System.out.println( entry.getTitle() );
-        System.out.println( entry.getId() );
+        System.out.println( "Comment created: " );
+        System.out.println( "Title: " + entry.getContent().getText() );
+        System.out.println( "Id: " + entry.getId() );
+
     }
 }

@@ -283,7 +283,7 @@ public class Buzz
     {
         String payload = constructPayload( content, link );
         HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
-            + BuzzFeed.Type.PRIVATE.getName(), BuzzIO.HTTP_METHOD_POST, null );
+            + BuzzFeed.Type.PRIVATE.getName(), BuzzIO.HTTP_METHOD_POST );
         HttpsURLConnection request2 = BuzzIO.addBody( request, payload );
         buzzOAuth.signRequest( request2 );
         String xmlResponse = BuzzIO.send( request );
@@ -312,7 +312,7 @@ public class Buzz
      * 
      * @param userId of the owner of the post
      * @param activityId to be read
-     * @return the created post
+     * @return the retrieved post
      * @throws BuzzIOException if any IO error occurs ( networking ).
      * @throws BuzzAuthenticationException if any OAuth error occurs
      * @throws BuzzParsingException if a parsing error occurs
@@ -342,7 +342,7 @@ public class Buzz
         throws BuzzIOException, BuzzAuthenticationException
     {
         HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
-            + BuzzFeed.Type.PRIVATE.getName() + "/" + activityId, BuzzIO.HTTP_METHOD_DELETE, null );
+            + BuzzFeed.Type.PRIVATE.getName() + "/" + activityId, BuzzIO.HTTP_METHOD_DELETE );
 
         buzzOAuth.signRequest( request );
 
@@ -365,23 +365,72 @@ public class Buzz
     {
         String payload = constructPayload( content, null );
         HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
-            + BuzzFeed.Type.COMMENTS.getName(), BuzzIO.HTTP_METHOD_POST, null );
+            + BuzzFeed.Type.PRIVATE.getName() + "/" + activityId + "/" + BuzzFeed.Type.COMMENTS.getName(),
+                                                           BuzzIO.HTTP_METHOD_POST );
         HttpsURLConnection request2 = BuzzIO.addBody( request, payload );
         buzzOAuth.signRequest( request2 );
         String xmlResponse = BuzzIO.send( request );
         return BuzzFeedEntryParser.parseFeedEntry( xmlResponse );
     }
 
-    public void updateComment()
+    /**
+     * Delete a comment in a Google Buzz post
+     * 
+     * @param userId of the owner of the post
+     * @param activityId where the comment is
+     * @param commentId to be deleted
+     * @throws BuzzIOException if any IO error occurs ( networking ).
+     * @throws BuzzAuthenticationException if any OAuth error occurs
+     */
+    public void deleteComment( String userId, String activityId, String commentId )
+        throws BuzzIOException, BuzzAuthenticationException
     {
+        HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
+            + BuzzFeed.Type.PRIVATE.getName() + "/" + activityId + "/" + BuzzFeed.Type.COMMENTS.getName() + "/"
+            + commentId, BuzzIO.HTTP_METHOD_DELETE );
+
+        buzzOAuth.signRequest( request );
+
+        BuzzIO.send( request );
     }
 
-    public void deleteComment()
+    /**
+     * Read a post comment from Google Buzz
+     * 
+     * @param userId of the owner of the post
+     * @param activityId where the comment is posted
+     * @param commentId to be read
+     * @return
+     * @return the retrieved post comment
+     * @throws BuzzIOException if any IO error occurs ( networking ).
+     * @throws BuzzAuthenticationException if any OAuth error occurs
+     * @throws BuzzParsingException if a parsing error occurs
+     */
+    public BuzzFeedEntry getComment( String userId, String activityId, String commentId )
+        throws BuzzIOException, BuzzAuthenticationException, BuzzParsingException
     {
+        HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
+            + BuzzFeed.Type.PRIVATE.getName() + "/" + activityId + "/" + BuzzFeed.Type.COMMENTS.getName() + "/"
+            + commentId );
+
+        buzzOAuth.signRequest( request );
+
+        String xmlResponse = BuzzIO.send( request );
+
+        return BuzzFeedEntryParser.parseFeedEntry( xmlResponse );
     }
 
-    public void getComments()
+    public BuzzFeed getComments( String userId, String activityId )
+        throws BuzzIOException, BuzzAuthenticationException, BuzzParsingException
     {
+        HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
+            + BuzzFeed.Type.PRIVATE.getName() + "/" + activityId + "/" + BuzzFeed.Type.COMMENTS.getName() );
+
+        buzzOAuth.signRequest( request );
+
+        String xmlResponse = BuzzIO.send( request );
+
+        return BuzzFeedParser.parseFeed( xmlResponse );
     }
 
     /**
@@ -413,7 +462,7 @@ public class Buzz
     private String constructContent( BuzzContent content )
         throws BuzzValidationException
     {
-        if ( content == null || content.getContent() == null || content.getContent().equals( "" ) )
+        if ( content == null || content.getText() == null || content.getText().equals( "" ) )
         {
             throw new BuzzValidationException( "The content is invalid. null or required attributes are empty?" );
         }
@@ -421,7 +470,7 @@ public class Buzz
         sb.append( "<content type=\"" );
         sb.append( content.getType() );
         sb.append( "\">" );
-        sb.append( content.getContent() );
+        sb.append( content.getText() );
         sb.append( "</content>" );
         return sb.toString();
     }
@@ -460,7 +509,7 @@ public class Buzz
     {
     }
 
-    public void deletePost()
+    public void updateComment()
     {
     }
 

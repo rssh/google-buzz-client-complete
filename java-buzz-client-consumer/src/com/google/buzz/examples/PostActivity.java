@@ -106,7 +106,7 @@ public class PostActivity
          * Create the content of the post
          */
         BuzzContent buzzContent = new BuzzContent();
-        buzzContent.setContent( content );
+        buzzContent.setText( content );
 
         /**
          * Execute API method to post an entry.

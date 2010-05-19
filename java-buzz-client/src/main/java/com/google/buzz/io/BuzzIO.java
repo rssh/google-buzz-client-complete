@@ -83,6 +83,21 @@ public class BuzzIO
     }
 
     /**
+     * Convinient overloaded method with no headers by default.<br/>
+     * Used to post/delete information such as activities and comments.
+     * 
+     * @param feedUrl of the url to be requested
+     * @param httpMethod to be used.
+     * @return the HttpsUrlConnection object
+     * @throws BuzzIOException if any IO error occurs ( networking ).
+     */
+    public static HttpsURLConnection createRequest( String feedUrl, String httpMethod )
+        throws BuzzIOException
+    {
+        return createRequest( feedUrl, httpMethod, null );
+    }
+
+    /**
      * Convinient overloaded method with <b>HTTP_METHOD_GET</b> as default and no headers.<br/>
      * Used to retrieve all the feeds. ( @following, @followers, @public, @consumption, @self ).
      * 

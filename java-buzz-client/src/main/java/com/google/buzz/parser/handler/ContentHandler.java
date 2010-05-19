@@ -72,7 +72,7 @@ public class ContentHandler
     public void characters( char[] ch, int start, int length )
         throws SAXException
     {
-        content.setContent( ( new String( ch ).substring( start, start + length ) ) );
+        content.setText( ( new String( ch ).substring( start, start + length ) ) );
 
     }
 }
