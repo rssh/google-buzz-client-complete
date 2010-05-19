@@ -15,12 +15,6 @@ import com.google.buzz.exception.BuzzIOException;
  */
 public class DeleteActivity
 {
-
-    /**
-     * The id of the activity to be deleted
-     */
-    private static String activityId;
-
     /**
      * The consumer application key for OAuth.
      */
@@ -35,6 +29,11 @@ public class DeleteActivity
      * The userId to be used in the deletion request
      */
     private static String userId;
+
+    /**
+     * The id of the activity to be deleted
+     */
+    private static String activityId;
 
     /**
      * Example main method

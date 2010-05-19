@@ -18,11 +18,6 @@ import com.google.buzz.model.BuzzFeedEntry;
 public class ReadActivity
 {
     /**
-     * The id of the activity to be retrieved
-     */
-    private static String activityId;
-
-    /**
      * The consumer application key for OAuth.
      */
     private static String consumerKey;
@@ -36,6 +31,11 @@ public class ReadActivity
      * The id of the owner of the post
      */
     private static String userId;
+
+    /**
+     * The id of the activity to be retrieved
+     */
+    private static String activityId;
 
     /**
      * Example main method
