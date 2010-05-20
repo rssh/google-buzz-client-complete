@@ -4,15 +4,14 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import com.google.buzz.model.BuzzFeed;
-import com.google.buzz.util.DateUtils;
+import com.google.buzz.model.BuzzCommentsFeed;
 
 /**
- * Handler for xml element: <b>Feed</b>
+ * Handler for xml element: <b>Comments</b>
  * 
  * @author roberto.estivill
  */
-public class FeedHandler
+public class CommentsFeedHandler
     extends BaseHandler
 {
     /**
@@ -21,7 +20,6 @@ public class FeedHandler
     private static final String LINK = "link";
     private static final String TITLE = "title";
     private static final String TYPE = "type";
-    private static final String UPDATED = "updated";
     private static final String ID = "id";
     private static final String GENERATOR = "generator";
     private static final String GENERATOR_URI = "uri";
@@ -31,7 +29,6 @@ public class FeedHandler
      * Position flags
      */
     private boolean insideTitle = false;
-    private boolean insideUpdated = false;
     private boolean insideId = false;
     private boolean insideGenerator = false;
 
@@ -39,22 +36,22 @@ public class FeedHandler
      * Children handlers
      */
     private LinkHandler linkHandler;
-    private FeedEntryHandler feedEntryHandler;
+    private CommentHandler commentHandler;
 
     /**
      * Object to return
      */
-    private BuzzFeed feed;
+    private BuzzCommentsFeed commentsFeed;
 
     /**
      * Constructor method to create a root handler.
      * 
      * @param parentHandler handler
      */
-    public FeedHandler( XMLReader xmlReader )
+    public CommentsFeedHandler( XMLReader xmlReader )
     {
         super( xmlReader );
-        feed = new BuzzFeed();
+        commentsFeed = new BuzzCommentsFeed();
     }
 
     /**
@@ -62,18 +59,18 @@ public class FeedHandler
      * 
      * @param parentHandler handler
      */
-    public FeedHandler( BaseHandler aParent )
+    public CommentsFeedHandler( BaseHandler aParent )
     {
         super( aParent );
-        feed = new BuzzFeed();
+        commentsFeed = new BuzzCommentsFeed();
     }
 
     /**
      * @return the created feed object
      */
-    public BuzzFeed getFeed()
+    public BuzzCommentsFeed getFeed()
     {
-        return feed;
+        return commentsFeed;
     }
 
     /**
@@ -93,13 +90,9 @@ public class FeedHandler
             String titleType = attributes.getValue( TYPE );
             if ( titleType != null && !titleType.equals( "" ) )
             {
-                feed.setTitleType( titleType );
+                commentsFeed.setTitleType( titleType );
             }
             insideTitle = true;
-        }
-        else if ( UPDATED.equals( name ) )
-        {
-            insideUpdated = true;
         }
         else if ( ID.equals( name ) )
         {
@@ -111,14 +104,14 @@ public class FeedHandler
             String generatorUri = attributes.getValue( GENERATOR_URI );
             if ( generatorUri != null && !generatorUri.equals( "" ) )
             {
-                feed.setGeneratorUri( generatorUri );
+                commentsFeed.setGeneratorUri( generatorUri );
             }
         }
         else if ( ENTRY.equals( name ) )
         {
-            feedEntryHandler = new FeedEntryHandler( this );
-            feedEntryHandler.startHandlingEvents();
-            feedEntryHandler.startElement( uri, name, qName, attributes );
+            commentHandler = new CommentHandler( this );
+            commentHandler.startHandlingEvents();
+            commentHandler.startElement( uri, name, qName, attributes );
         }
     }
 
@@ -130,15 +123,11 @@ public class FeedHandler
     {
         if ( LINK.equals( name ) )
         {
-            feed.getLinks().add( linkHandler.getBuzzLink() );
+            commentsFeed.getLinks().add( linkHandler.getBuzzLink() );
         }
         else if ( TITLE.equals( name ) )
         {
             insideTitle = false;
-        }
-        else if ( UPDATED.equals( name ) )
-        {
-            insideUpdated = false;
         }
         else if ( ID.equals( name ) )
         {
@@ -150,7 +139,7 @@ public class FeedHandler
         }
         else if ( ENTRY.equals( name ) )
         {
-            feed.getEntries().add( feedEntryHandler.getBuzzFeedEntry() );
+            commentsFeed.getComments().add( commentHandler.getBuzzComment() );
         }
     }
 
@@ -163,19 +152,15 @@ public class FeedHandler
         String content = ( new String( ch ).substring( start, start + length ) );
         if ( insideTitle )
         {
-            feed.setTitle( content );
-        }
-        else if ( insideUpdated )
-        {
-            feed.setUpdated( DateUtils.parseDate( content ) );
+            commentsFeed.setTitle( content );
         }
         else if ( insideId )
         {
-            feed.setId( content );
+            commentsFeed.setId( content );
         }
         else if ( insideGenerator )
         {
-            feed.setGenerator( content );
+            commentsFeed.setGenerator( content );
         }
     }
 }

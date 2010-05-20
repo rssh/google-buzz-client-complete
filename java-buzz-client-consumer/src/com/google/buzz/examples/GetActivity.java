@@ -6,14 +6,16 @@ import com.google.buzz.Buzz;
 import com.google.buzz.examples.util.ExampleUtils;
 import com.google.buzz.exception.BuzzAuthenticationException;
 import com.google.buzz.exception.BuzzIOException;
+import com.google.buzz.exception.BuzzParsingException;
+import com.google.buzz.model.BuzzFeedEntry;
 
 /**
- * This example class demonstrates how to use the <b>Buzz.java</b> API to delete a comment in a
- * Google Buzz post.
+ * This example class demonstrates how to use the <b>Buzz.java</b> API to retrieve a single post
+ * from Google Buzz.
  * 
  * @author roberto.estivill
  */
-public class DeleteActivityComment
+public class GetActivity
 {
     /**
      * The consumer application key for OAuth.
@@ -26,19 +28,14 @@ public class DeleteActivityComment
     private static String consumerSecret;
 
     /**
-     * The userId to be used in the deletion request
+     * The id of the owner of the post
      */
     private static String userId;
 
     /**
-     * The id of the activity where the comment is
+     * The id of the activity to be retrieved
      */
     private static String activityId;
-
-    /**
-     * The id of the comment to be deleted
-     */
-    private static String commentId;
 
     /**
      * Example main method
@@ -49,19 +46,19 @@ public class DeleteActivityComment
      *            <li>Consumer Secret</li>
      *            <li>User Id</li>
      *            <li>Activity Id</li>
-     *            <li>Comment Id</li>
      *            </ul>
      * @throws BuzzIOException if any IO error occurs ( networking ).
      * @throws BuzzAuthenticationException if any OAuth error occurs
      * @throws IOException if an error ocurrs getting the verification code from the console.
+     * @throws BuzzParsingException
      */
     public static void main( String[] args )
-        throws BuzzAuthenticationException, IOException, BuzzIOException
+        throws BuzzAuthenticationException, IOException, BuzzIOException, BuzzParsingException
     {
         /**
          * Check for arguments
          */
-        if ( args.length != 5 )
+        if ( args.length != 4 )
         {
             System.err.println( "Missing arguments." );
             System.exit( 0 );
@@ -74,7 +71,6 @@ public class DeleteActivityComment
         consumerSecret = args[1];
         userId = args[2];
         activityId = args[3];
-        commentId = args[4];
 
         /**
          * Create a new instance of the API
@@ -85,7 +81,7 @@ public class DeleteActivityComment
          * Get the url to authenticated the user. <br/>
          * The user has to grant access to this application, to manage Buzz Content.
          */
-        String verificationUrl = buzz.getAuthenticationUrl( Buzz.BUZZ_SCOPE_WRITE, consumerKey, consumerSecret );
+        String verificationUrl = buzz.getAuthenticationUrl( Buzz.BUZZ_SCOPE_READONLY, consumerKey, consumerSecret );
 
         /**
          * Redirect the user to the verificationUrl and read the verification code. <br/>
@@ -103,13 +99,14 @@ public class DeleteActivityComment
         buzz.setAccessToken( verificationCode );
 
         /**
-         * Execute API method to delete a comment.
+         * Execute API method to delete a post.
          */
-        buzz.deleteComment( userId, activityId, commentId );
+        BuzzFeedEntry entry = buzz.getPost( userId, activityId );
 
         /**
          * Print results
          */
-        System.out.println( "The comment: " + commentId + " has been deleted." );
+        System.out.println( "Title: " + entry.getTitle() );
+        System.out.println( "Id: " + entry.getId() );
     }
 }

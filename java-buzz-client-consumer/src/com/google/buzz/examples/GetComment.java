@@ -7,15 +7,15 @@ import com.google.buzz.examples.util.ExampleUtils;
 import com.google.buzz.exception.BuzzAuthenticationException;
 import com.google.buzz.exception.BuzzIOException;
 import com.google.buzz.exception.BuzzParsingException;
-import com.google.buzz.model.BuzzFeedEntry;
+import com.google.buzz.model.BuzzComment;
 
 /**
- * This example class demonstrates how to use the <b>Buzz.java</b> API to retrieve a comment in a
+ * This example class demonstrates how to use the <b>Buzz.java</b> API to retrieve a comment from a
  * Google Buzz post.
  * 
  * @author roberto.estivill
  */
-public class GetActivityComment
+public class GetComment
 {
     /**
      * The consumer application key for OAuth.
@@ -108,13 +108,13 @@ public class GetActivityComment
         /**
          * Execute API method to delete a comment.
          */
-        BuzzFeedEntry entry = buzz.getComment( userId, activityId, commentId );
+        BuzzComment comment = buzz.getComment( userId, activityId, commentId );
 
         /**
          * Print results
          */
         System.out.println( "The comment: " );
-        System.out.println( entry.getContent().getText() );
-        System.out.println( entry.getPublished() );
+        System.out.println( comment.getContent().getText() );
+        System.out.println( comment.getPublished() );
     }
 }

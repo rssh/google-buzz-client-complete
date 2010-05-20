@@ -14,16 +14,21 @@ import com.google.buzz.exception.BuzzIOException;
 import com.google.buzz.exception.BuzzParsingException;
 import com.google.buzz.exception.BuzzValidationException;
 import com.google.buzz.io.BuzzIO;
+import com.google.buzz.model.BuzzComment;
+import com.google.buzz.model.BuzzCommentsFeed;
 import com.google.buzz.model.BuzzContent;
 import com.google.buzz.model.BuzzFeed;
 import com.google.buzz.model.BuzzFeedEntry;
 import com.google.buzz.model.BuzzLink;
 import com.google.buzz.model.BuzzUserProfile;
 import com.google.buzz.oauth.BuzzOAuth;
+import com.google.buzz.parser.BuzzCommentParser;
+import com.google.buzz.parser.BuzzCommentsParser;
 import com.google.buzz.parser.BuzzFeedEntryParser;
 import com.google.buzz.parser.BuzzFeedParser;
 import com.google.buzz.parser.BuzzUserProfileParser;
 import com.google.buzz.parser.BuzzUsersProfilesParser;
+import com.google.buzz.xml.XMLGenerator;
 
 /**
  * Main class for the Buzz Client API.
@@ -281,11 +286,13 @@ public class Buzz
     public BuzzFeedEntry createPost( String userId, BuzzContent content, BuzzLink link )
         throws BuzzIOException, BuzzAuthenticationException, BuzzValidationException, BuzzParsingException
     {
-        String payload = constructPayload( content, link );
+        String payload = XMLGenerator.constructPayload( content, link );
+
         HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
             + BuzzFeed.Type.PRIVATE.getName(), BuzzIO.HTTP_METHOD_POST );
-        HttpsURLConnection request2 = BuzzIO.addBody( request, payload );
-        buzzOAuth.signRequest( request2 );
+
+        buzzOAuth.signRequest( BuzzIO.addBody( request, payload ) );
+
         String xmlResponse = BuzzIO.send( request );
         return BuzzFeedEntryParser.parseFeedEntry( xmlResponse );
 
@@ -350,6 +357,32 @@ public class Buzz
     }
 
     /**
+     * Update a google buzz post.
+     * 
+     * @param userId of the person who created the post
+     * @param content of the new post
+     * @param activityId of the activity to be updated
+     * @return the created post
+     * @throws BuzzIOException if any IO error occurs ( networking ).
+     * @throws BuzzAuthenticationException if any OAuth error occurs
+     * @throws BuzzValidationException if any required element of the new post is missing
+     * @throws BuzzParsingException if a parsing error occurs
+     */
+    public BuzzFeedEntry updatePost( String userId, String activityId, BuzzContent content )
+        throws BuzzValidationException, BuzzIOException, BuzzAuthenticationException, BuzzParsingException
+    {
+        String payload = XMLGenerator.constructPayload( content, null );
+
+        HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
+            + BuzzFeed.Type.PRIVATE.getName() + "/" + activityId, BuzzIO.HTTP_METHOD_PUT );
+
+        buzzOAuth.signRequest( BuzzIO.addBody( request, payload ) );
+
+        String xmlResponse = BuzzIO.send( request );
+        return BuzzFeedEntryParser.parseFeedEntry( xmlResponse );
+    }
+
+    /**
      * Creates a new comment in a Google Buzz activity
      * 
      * @param userId of the person who creates the post
@@ -360,17 +393,18 @@ public class Buzz
      * @throws BuzzValidationException if any required element of the new post is missing
      * @throws BuzzParsingException if a parsing error occurs
      */
-    public BuzzFeedEntry createComment( String userId, String activityId, BuzzContent content )
+    public BuzzComment createComment( String userId, String activityId, BuzzContent content )
         throws BuzzIOException, BuzzAuthenticationException, BuzzValidationException, BuzzParsingException
     {
-        String payload = constructPayload( content, null );
+        String payload = XMLGenerator.constructPayload( content, null );
         HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
             + BuzzFeed.Type.PRIVATE.getName() + "/" + activityId + "/" + BuzzFeed.Type.COMMENTS.getName(),
                                                            BuzzIO.HTTP_METHOD_POST );
-        HttpsURLConnection request2 = BuzzIO.addBody( request, payload );
-        buzzOAuth.signRequest( request2 );
+        buzzOAuth.signRequest( BuzzIO.addBody( request, payload ) );
+
         String xmlResponse = BuzzIO.send( request );
-        return BuzzFeedEntryParser.parseFeedEntry( xmlResponse );
+
+        return BuzzCommentParser.parseComment( xmlResponse );
     }
 
     /**
@@ -400,13 +434,13 @@ public class Buzz
      * @param userId of the owner of the post
      * @param activityId where the comment is posted
      * @param commentId to be read
-     * @return
+     * @return the buzz comment object
      * @return the retrieved post comment
      * @throws BuzzIOException if any IO error occurs ( networking ).
      * @throws BuzzAuthenticationException if any OAuth error occurs
      * @throws BuzzParsingException if a parsing error occurs
      */
-    public BuzzFeedEntry getComment( String userId, String activityId, String commentId )
+    public BuzzComment getComment( String userId, String activityId, String commentId )
         throws BuzzIOException, BuzzAuthenticationException, BuzzParsingException
     {
         HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
@@ -417,10 +451,20 @@ public class Buzz
 
         String xmlResponse = BuzzIO.send( request );
 
-        return BuzzFeedEntryParser.parseFeedEntry( xmlResponse );
+        return BuzzCommentParser.parseComment( xmlResponse );
     }
 
-    public BuzzFeed getComments( String userId, String activityId )
+    /**
+     * Get all the comments from a specific post.
+     * 
+     * @param userId logged in
+     * @param activityId of the comments to be retrieved
+     * @return the comments feed object
+     * @throws BuzzIOException if any IO error occurs ( networking ).
+     * @throws BuzzAuthenticationException if any OAuth error occurs
+     * @throws BuzzParsingException if a parsing error occurs
+     */
+    public BuzzCommentsFeed getComments( String userId, String activityId )
         throws BuzzIOException, BuzzAuthenticationException, BuzzParsingException
     {
         HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
@@ -430,88 +474,41 @@ public class Buzz
 
         String xmlResponse = BuzzIO.send( request );
 
-        return BuzzFeedParser.parseFeed( xmlResponse );
+        return BuzzCommentsParser.parseComments( xmlResponse );
     }
 
     /**
-     * Generates new post request body.
+     * Updates a comment in a Google Buzz activity
      * 
-     * @param content of the new post
-     * @param link (if any)
-     * @return the xml representation of the new entry.
-     * @throws BuzzValidationException if any required value is missing.
+     * @param userId of the person who updates the post
+     * @param activityId where the comment was done
+     * @param content to be updated
+     * @return the updated comment
+     * @throws BuzzIOException if any IO error occurs ( networking ).
+     * @throws BuzzAuthenticationException if any OAuth error occurs
+     * @throws BuzzValidationException if any required element of the new post is missing
+     * @throws BuzzParsingException if a parsing error occurs
      */
-    private String constructPayload( BuzzContent content, BuzzLink link )
-        throws BuzzValidationException
+    public BuzzComment updateComment( String userId, String activityId, String commentId, BuzzContent content )
+        throws BuzzValidationException, BuzzIOException, BuzzAuthenticationException, BuzzParsingException
     {
-        StringBuilder sb = new StringBuilder();
-        sb.append( "<entry xmlns=\"http://www.w3.org/2005/Atom\">" );
-        sb.append( constructContent( content ) );
-        sb.append( link != null ? constructLink( link ) : "" );
-        sb.append( "</entry>" );
-        return sb.toString();
-    }
+        String payload = XMLGenerator.constructPayload( content, null );
 
-    /**
-     * Generates the Content xml element to be included in the request body
-     * 
-     * @param link object to write the xml element.
-     * @return the xml element.
-     * @throws BuzzValidationException if the object is missing any required value.
-     */
-    private String constructContent( BuzzContent content )
-        throws BuzzValidationException
-    {
-        if ( content == null || content.getText() == null || content.getText().equals( "" ) )
-        {
-            throw new BuzzValidationException( "The content is invalid. null or required attributes are empty?" );
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append( "<content type=\"" );
-        sb.append( content.getType() );
-        sb.append( "\">" );
-        sb.append( content.getText() );
-        sb.append( "</content>" );
-        return sb.toString();
-    }
+        HttpsURLConnection request = BuzzIO.createRequest( BUZZ_URL_ACTIVITIES + userId + "/"
+            + BuzzFeed.Type.PRIVATE.getName() + "/" + activityId + "/" + BuzzFeed.Type.COMMENTS.getName() + "/"
+            + commentId, BuzzIO.HTTP_METHOD_PUT );
 
-    /**
-     * Generates the Link xml element to be included in the request body.
-     * 
-     * @param link object to write the xml element
-     * @return the xml element
-     * @throws BuzzValidationException if the object is missing any required value
-     */
-    private String constructLink( BuzzLink link )
-        throws BuzzValidationException
-    {
-        if ( link == null || link.getHref() == null || link.getType() == null || link.getRel() == null
-            || link.getHref().equals( "" ) || link.getType().equals( "" ) || link.getRel().equals( "" ) )
-        {
-            throw new BuzzValidationException( "The content is invalid. null or empty attributes?" );
-        }
-        StringBuilder sb = new StringBuilder();
-        sb.append( "<link rel=\"" );
-        sb.append( link.getRel() );
-        sb.append( "\" type=\"" );
-        sb.append( link.getType() );
-        sb.append( "\" href=\"" );
-        sb.append( link.getHref() );
-        sb.append( "\" />" );
-        return sb.toString();
+        buzzOAuth.signRequest( BuzzIO.addBody( request, payload ) );
+
+        String xmlResponse = BuzzIO.send( request );
+
+        return BuzzCommentParser.parseComment( xmlResponse );
     }
 
     /**
      * The following methods were copied from the php buzz client and should be implemented in the
      * future.
      */
-    public void updatePost()
-    {
-    }
-
-    public void updateComment()
-    {
-    }
 
     public void getLikes()
     {

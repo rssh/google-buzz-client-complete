@@ -72,11 +72,6 @@ public class BuzzFeedEntry
     private BuzzActivity activity;
 
     /**
-     * The entry reply to element
-     */
-    private BuzzReply reply;
-
-    /**
      * @return the title
      */
     public String getTitle()
@@ -269,22 +264,6 @@ public class BuzzFeedEntry
     }
 
     /**
-     * @return the reply
-     */
-    public BuzzReply getReply()
-    {
-        return reply;
-    }
-
-    /**
-     * @param reply the reply to set
-     */
-    public void setReply( BuzzReply reply )
-    {
-        this.reply = reply;
-    }
-
-    /**
      * Overwrite the default toString method
      * 
      * @return the string representation of the object
@@ -315,7 +294,6 @@ public class BuzzFeedEntry
         sb.append( newIndent + "Cross Post Source Id: " + crosspostSourceId );
         sb.append( newIndent + "Source Activity Service Title: " + sourceActivityTitle );
         sb.append( newIndent + "Buzz Activity: " + activity.toString( newIndent + "\t" ) );
-        sb.append( newIndent + "Buzz Reply: " + reply.toString( newIndent + "\t" ) );
         sb.append( newIndent + "Links: " );
         for ( int i = 0; i < links.size(); i++ )
         {

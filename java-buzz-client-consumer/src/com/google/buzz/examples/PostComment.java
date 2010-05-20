@@ -7,16 +7,17 @@ import com.google.buzz.examples.util.ExampleUtils;
 import com.google.buzz.exception.BuzzAuthenticationException;
 import com.google.buzz.exception.BuzzIOException;
 import com.google.buzz.exception.BuzzParsingException;
+import com.google.buzz.exception.BuzzValidationException;
 import com.google.buzz.model.BuzzComment;
-import com.google.buzz.model.BuzzCommentsFeed;
+import com.google.buzz.model.BuzzContent;
 
 /**
- * This example class demonstrates how to use the <b>Buzz.java</b> API to retrieve all the comments
- * from a Google Buzz post.
+ * This example class demonstrates how to use the <b>Buzz.java</b> API to create a comment on a
+ * Google Buzz post.
  * 
  * @author roberto.estivill
  */
-public class GetActivityComments
+public class PostComment
 {
     /**
      * The consumer application key for OAuth.
@@ -29,14 +30,20 @@ public class GetActivityComments
     private static String consumerSecret;
 
     /**
-     * The userId to be used
+     * User account to be used.<br/>
+     * If @me, the authentication will be executed with the user that is logged in on the browser.
      */
-    private static String userId;
+    public static String userId;
 
     /**
-     * The id of the activity
+     * The id of the activity to be commented
      */
     private static String activityId;
+
+    /**
+     * The content of the comment
+     */
+    public static String comment;
 
     /**
      * Example main method
@@ -46,20 +53,22 @@ public class GetActivityComments
      *            <li>Consumer Key</li>
      *            <li>Consumer Secret</li>
      *            <li>User Id</li>
-     *            <li>Activity Id</li>
+     *            <li>Activity id to be commented</li>
+     *            <li>Post comment</li>
      *            </ul>
      * @throws BuzzIOException if any IO error occurs ( networking ).
      * @throws BuzzAuthenticationException if any OAuth error occurs
+     * @throws BuzzValidationException if any required element of the new post is missing
      * @throws BuzzParsingException if a parsing error occurs
      * @throws IOException if an error ocurrs getting the verification code from the console.
      */
     public static void main( String[] args )
-        throws BuzzAuthenticationException, IOException, BuzzIOException, BuzzParsingException
+        throws BuzzAuthenticationException, IOException, BuzzIOException, BuzzValidationException, BuzzParsingException
     {
         /**
          * Check for arguments
          */
-        if ( args.length != 4 )
+        if ( args.length != 5 )
         {
             System.err.println( "Missing arguments." );
             System.exit( 0 );
@@ -72,6 +81,7 @@ public class GetActivityComments
         consumerSecret = args[1];
         userId = args[2];
         activityId = args[3];
+        comment = args[4];
 
         /**
          * Create a new instance of the API
@@ -82,7 +92,7 @@ public class GetActivityComments
          * Get the url to authenticated the user. <br/>
          * The user has to grant access to this application, to manage Buzz Content.
          */
-        String verificationUrl = buzz.getAuthenticationUrl( Buzz.BUZZ_SCOPE_READONLY, consumerKey, consumerSecret );
+        String verificationUrl = buzz.getAuthenticationUrl( Buzz.BUZZ_SCOPE_WRITE, consumerKey, consumerSecret );
 
         /**
          * Redirect the user to the verificationUrl and read the verification code. <br/>
@@ -100,25 +110,21 @@ public class GetActivityComments
         buzz.setAccessToken( verificationCode );
 
         /**
-         * Execute API method to get the list of comments of a post.
+         * Create the content of the post
          */
-        BuzzCommentsFeed comments = buzz.getComments( userId, activityId );
+        BuzzContent buzzContent = new BuzzContent();
+        buzzContent.setText( comment );
+
+        /**
+         * Execute API method to post an entry.
+         */
+        BuzzComment comment = buzz.createComment( userId, activityId, buzzContent );
 
         /**
          * Print results
          */
-        System.out.println( comments.getTitle() );
-        if ( !comments.getComments().isEmpty() )
-        {
-            for ( BuzzComment comment : comments.getComments() )
-            {
-                System.out.print( "Comment Title: " + comment.getContent().getText() );
-                System.out.println( " | Comment Date: " + comment.getPublished() );
-            }
-        }
-        else
-        {
-            System.out.println( "The entry doesn't have any comments." );
-        }
+        System.out.println( "Comment created: " );
+        System.out.println( "Title: " + comment.getContent().getText() );
+        System.out.println( "Id: " + comment.getId() );
     }
 }

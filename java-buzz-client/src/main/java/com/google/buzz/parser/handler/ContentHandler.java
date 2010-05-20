@@ -16,6 +16,7 @@ public class ContentHandler
      * XML elements handled by this handler
      */
     private static final String CONTENT = "content";
+    private static final String ORIGINAL_CONTENT = "buzz:original-content";
     private static final String TYPE = "type";
 
     /**
@@ -59,7 +60,7 @@ public class ContentHandler
     public void endElement( String uri, String name, String qName )
         throws SAXException
     {
-        if ( CONTENT.equals( name ) )
+        if ( CONTENT.equals( name ) || ORIGINAL_CONTENT.equals( qName ) )
         {
             stopHandlingEvents();
             parentHandler.endElement( uri, name, qName );

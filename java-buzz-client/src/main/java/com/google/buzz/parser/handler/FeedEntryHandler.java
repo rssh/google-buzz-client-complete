@@ -1,14 +1,11 @@
 package com.google.buzz.parser.handler;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 import com.google.buzz.model.BuzzFeedEntry;
+import com.google.buzz.util.DateUtils;
 
 /**
  * Handler for xml element: <b>Feed Entry</b>
@@ -35,7 +32,6 @@ public class FeedEntryHandler
     private static final String SOURCE = "source";
     private static final String ACTIVITY_SERVICE = "activity:service";
     private static final String BUZZ_VISIBILITY = "buzz:visibility";
-    private static final String IN_REPLY_TO = "thr:in-reply-to";
 
     /**
      * Position flags
@@ -57,7 +53,6 @@ public class FeedEntryHandler
     private ContentHandler contentHandler;
     private ActivityHandler activityHandler;
     private VisibilityHandler visibilityHandler;
-    private ReplyHandler replyHandler;
 
     /**
      * Object to return
@@ -162,12 +157,6 @@ public class FeedEntryHandler
             activityHandler.startHandlingEvents();
             activityHandler.startElement( uri, name, qName, attributes );
         }
-        else if ( IN_REPLY_TO.equals( qName ) )
-        {
-            replyHandler = new ReplyHandler( this );
-            replyHandler.startHandlingEvents();
-            replyHandler.startElement( uri, name, qName, attributes );
-        }
     }
 
     /**
@@ -233,10 +222,6 @@ public class FeedEntryHandler
         {
             entry.setActivity( activityHandler.getBuzzActivity() );
         }
-        else if ( IN_REPLY_TO.equals( qName ) )
-        {
-            entry.setReply( replyHandler.getBuzzReply() );
-        }
     }
 
     /**
@@ -260,11 +245,11 @@ public class FeedEntryHandler
         }
         else if ( insidePublished )
         {
-            entry.setPublished( parseDate( content ) );
+            entry.setPublished( DateUtils.parseDate( content ) );
         }
         else if ( insideUpdated )
         {
-            entry.setUpdated( parseDate( content ) );
+            entry.setUpdated( DateUtils.parseDate( content ) );
         }
         else if ( insideId )
         {
@@ -274,26 +259,5 @@ public class FeedEntryHandler
         {
             entry.setActivityVerb( content );
         }
-    }
-
-    /**
-     * Method to pase date fields.
-     * 
-     * @param date to parse
-     * @return the date object
-     */
-    private Date parseDate( String date )
-    {
-        SimpleDateFormat format = new SimpleDateFormat( "yyyy-MM-dd'T'hh:mm:ss.SSS'Z'" );
-        Date dateObj = null;
-        try
-        {
-            dateObj = format.parse( date );
-        }
-        catch ( ParseException e )
-        {
-            return null;
-        }
-        return dateObj;
     }
 }

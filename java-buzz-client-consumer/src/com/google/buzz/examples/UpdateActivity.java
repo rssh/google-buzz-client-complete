@@ -12,12 +12,12 @@ import com.google.buzz.model.BuzzContent;
 import com.google.buzz.model.BuzzFeedEntry;
 
 /**
- * This example class demonstrates how to use the <b>Buzz.java</b> API to create a post comment on
- * Google Buzz.
+ * This example class demonstrates how to use the <b>Buzz.java</b> API to update a post on Google
+ * Buzz.
  * 
  * @author roberto.estivill
  */
-public class PostActivityComment
+public class UpdateActivity
 {
     /**
      * The consumer application key for OAuth.
@@ -36,14 +36,10 @@ public class PostActivityComment
     public static String userId;
 
     /**
-     * The id of the activity to be commented
+     * The content of the post activity to be created.<br/>
+     * Will be modified updated with the value of <b>newContent</b>
      */
-    private static String activityId;
-
-    /**
-     * The content of the comment
-     */
-    public static String comment;
+    public static String content;
 
     /**
      * Example main method
@@ -53,8 +49,8 @@ public class PostActivityComment
      *            <li>Consumer Key</li>
      *            <li>Consumer Secret</li>
      *            <li>User Id</li>
-     *            <li>Activity id to be commented</li>
-     *            <li>Post comment</li>
+     *            <li>Post content</li>
+     *            <li>Post newContent</li>
      *            </ul>
      * @throws BuzzIOException if any IO error occurs ( networking ).
      * @throws BuzzAuthenticationException if any OAuth error occurs
@@ -68,7 +64,7 @@ public class PostActivityComment
         /**
          * Check for arguments
          */
-        if ( args.length != 5 )
+        if ( args.length != 4 )
         {
             System.err.println( "Missing arguments." );
             System.exit( 0 );
@@ -80,8 +76,7 @@ public class PostActivityComment
         consumerKey = args[0];
         consumerSecret = args[1];
         userId = args[2];
-        activityId = args[3];
-        comment = args[4];
+        content = args[3];
 
         /**
          * Create a new instance of the API
@@ -113,19 +108,39 @@ public class PostActivityComment
          * Create the content of the post
          */
         BuzzContent buzzContent = new BuzzContent();
-        buzzContent.setText( comment );
+        buzzContent.setText( content );
 
         /**
          * Execute API method to post an entry.
          */
-        BuzzFeedEntry entry = buzz.createComment( userId, activityId, buzzContent );
+        BuzzFeedEntry entry = buzz.createPost( userId, buzzContent );
 
         /**
-         * Print results
+         * Print creation results
          */
-        System.out.println( "Comment created: " );
-        System.out.println( "Title: " + entry.getContent().getText() );
-        System.out.println( "Id: " + entry.getId() );
+        System.out.println( "Entry created: " );
+        System.out.println( "Title: " + entry.getTitle() );
+        System.out.println( "Published date: " + entry.getPublished() );
+        System.out.println( "Updated date: " + entry.getUpdated() );
+        System.out.println( "Id: " + entry.getId() + "\n" );
 
+        /**
+         * Update values of the returned entry object
+         */
+        entry.setTitle( entry.getTitle() + ". UPDATED!" );
+        entry.getContent().setText( entry.getContent().getText() + ". UPDATED!" );
+
+        /**
+         * Execute API method to post an entry.
+         */
+        BuzzFeedEntry entryUpdated = buzz.updatePost( userId, entry.getId(), entry.getContent() );
+
+        /**
+         * Print update results
+         */
+
+        System.out.println( "Entry updated: " );
+        System.out.println( "Title: " + entryUpdated.getTitle() );
+        System.out.println( "Updated date: " + entryUpdated.getUpdated() );
     }
 }
