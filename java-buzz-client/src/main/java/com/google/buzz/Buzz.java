@@ -594,6 +594,22 @@ public class Buzz
         throws BuzzIOException, BuzzAuthenticationException
     { unlikePost("@me",postId); }
 
+
+    public BuzzFeedEntry resharePost(String postId, String annotation)
+        throws BuzzIOException, BuzzAuthenticationException,
+              BuzzValidationException, BuzzParsingException
+    {
+      HttpsURLConnection request = BuzzIO.createRequest( 
+               BUZZ_URL_ACTIVITIES +  "/@me/@self/",
+               BuzzIO.HTTP_METHOD_POST);
+      String payload = XMLGenerator.constructActivityIdPayload(postId, 
+                                                               annotation);
+      request = BuzzIO.addBody(request, payload ); 
+      buzzOAuth.signRequest( request );
+      String xmlResponse = BuzzIO.send( request );
+      return BuzzFeedEntryParser.parseFeedEntry(xmlResponse); 
+    }
+
     public void mutedPosts()
     {
     }

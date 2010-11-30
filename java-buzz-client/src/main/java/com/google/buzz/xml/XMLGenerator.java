@@ -25,6 +25,22 @@ public class XMLGenerator
         return sb.toString();
     }
 
+    public static String constructActivityIdPayload( String activityId, String annotation ) {
+        StringBuilder sb = new StringBuilder();
+        sb.append( "<entry xmlns=\"http://www.w3.org/2005/Atom\" ")
+          .append("  xmlns:activity=\"http://activitystrea.ms/spec/1.0\">");
+        if (annotation!=null) {
+          sb.append("<buzz:annotation>").append(annotation)
+            .append("</buzz:annotation>");
+        }
+        sb.append("<activity:verb>http://activitystrea.ms/schema/1.0/share</activity:verb>");
+        sb.append("<activity:object>")
+          .append("<id>").append(activityId).append("</id>")
+          .append("</activity:object>")
+          .append("</entry>");
+        return sb.toString();
+    }
+
     /**
      * Generates the Content xml element to be included in the request body
      * 
