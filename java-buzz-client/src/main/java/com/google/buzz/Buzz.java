@@ -563,17 +563,21 @@ public class Buzz
     }
 
     public void likePost(String userId, String postId)
-        throws BuzzIOException, BuzzAuthenticationException
+        throws BuzzIOException, BuzzAuthenticationException,
+               BuzzValidationException
     {
       HttpsURLConnection request = BuzzIO.createRequest( 
                BUZZ_URL_ACTIVITIES + userId  + "/@liked/"+postId,
                BuzzIO.HTTP_METHOD_PUT);
+      String payload = " "; // not-empty, becouse Content-Length required. 
+      request = BuzzIO.addBody(request, payload ); 
       buzzOAuth.signRequest( request );
       String xmlResponse = BuzzIO.send( request );
     }
 
     public void likePost(String postId)
-        throws BuzzIOException, BuzzAuthenticationException
+        throws BuzzIOException, BuzzAuthenticationException, 
+              BuzzValidationException
       { likePost("@me",postId); }
 
     public void unlikePost(String userId, String postId)
