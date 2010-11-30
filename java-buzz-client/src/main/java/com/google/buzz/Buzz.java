@@ -541,25 +541,51 @@ public class Buzz
     }
 
     /**
-     * The following methods were copied from the php buzz client and should be implemented in the
-     * future.
+     * Returns the people who liked the post.
+     *@param userId -- author of post
+     *@param postId -- id of post.
      */
-
-    public void getLikes()
+    public List<BuzzUserProfile> getLikes(String userId, String postId)
+        throws BuzzValidationException, BuzzIOException, BuzzAuthenticationException, BuzzParsingException
     {
+        HttpsURLConnection request = BuzzIO.createRequest( 
+               BUZZ_URL_ACTIVITIES + userId + "/@self/"+postId+"/@liked");
+        buzzOAuth.signRequest( request );
+        String xmlResponse = BuzzIO.send( request );
+        return BuzzUsersProfilesParser.parseUsersProfiles( xmlResponse );
     }
 
-    public void likedPosts()
+    //public void likedPosts()
+    //{
+    //}
+
+    public void likePost(String userId, String postId)
+        throws BuzzIOException, BuzzAuthenticationException
     {
+      HttpsURLConnection request = BuzzIO.createRequest( 
+               BUZZ_URL_ACTIVITIES + userId  + "/@liked/"+postId,
+               BuzzIO.HTTP_METHOD_PUT);
+      buzzOAuth.signRequest( request );
+      String xmlResponse = BuzzIO.send( request );
     }
 
-    public void likePost()
+    public void likePost(String postId)
+        throws BuzzIOException, BuzzAuthenticationException
+      { likePost("@me",postId); }
+
+    public void unlikePost(String userId, String postId)
+        throws BuzzIOException, BuzzAuthenticationException
     {
+      HttpsURLConnection request = BuzzIO.createRequest( 
+               BUZZ_URL_ACTIVITIES + userId  + "/@liked/"+postId,
+               BuzzIO.HTTP_METHOD_DELETE);
+      buzzOAuth.signRequest( request );
+      String xmlResponse = BuzzIO.send( request );
     }
 
-    public void unlikePost()
-    {
-    }
+    public void unlikePost(String postId)
+        throws BuzzIOException, BuzzAuthenticationException
+    { unlikePost("@me",postId); }
 
     public void mutedPosts()
     {
