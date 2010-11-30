@@ -20,7 +20,7 @@ public class BuzzFeed
     public enum Type
     {
         PUBLIC("@public"), PRIVATE("@self"), CONSUMPTION("@consumption"), FOLLOWERS("@followers"), FOLLOWING(
-            "@following"), COMMENTS("@comments");
+            "@following"), COMMENTS("@comments"), LIKED("@liked");
 
         /**
          * The feed type

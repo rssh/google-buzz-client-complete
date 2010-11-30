@@ -555,9 +555,12 @@ public class Buzz
         return BuzzUsersProfilesParser.parseUsersProfiles( xmlResponse );
     }
 
-    //public void likedPosts()
-    //{
-    //}
+    public BuzzFeed likedPosts()
+        throws BuzzIOException, BuzzAuthenticationException, 
+               BuzzParsingException
+    {
+      return getPosts("@me",BuzzFeed.Type.LIKED);
+    }
 
     public void likePost(String userId, String postId)
         throws BuzzIOException, BuzzAuthenticationException
