@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.google.buzz</groupId>
-	<artifactId>java-buzz-client</artifactId>
+	<artifactId>java-buzz-client-rssh</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0-SNAPSHOT</version>
-	<name>java-buzz-client</name>
+	<name>java-buzz-client-rssh</name>
 	<repositories>
 		<repository>
 			<id>central</id>
@@ -37,7 +37,7 @@
 		<dependency>
 			<groupId>oauth.signpost</groupId>
 			<artifactId>signpost-core</artifactId>
-			<version>1.1</version>
+			<version>1.2.1.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -47,7 +47,7 @@
 		</dependency>
 	</dependencies>
 	<build>
-		<finalName>java-buzz-client</finalName>
+		<finalName>java-buzz-client-rssh</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>

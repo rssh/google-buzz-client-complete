@@ -3,11 +3,14 @@ package com.google.buzz;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import oauth.signpost.OAuth;
-import oauth.signpost.signature.SignatureMethod;
+// Made signpost 1.2.1.1 compliant
+//import oauth.signpost.signature.SignatureMethod;
 
 import com.google.buzz.exception.BuzzAuthenticationException;
 import com.google.buzz.exception.BuzzIOException;
@@ -85,7 +88,11 @@ public class Buzz
     public String getAuthenticationUrl( String scope, String consumerKey, String consumerSecret, String callbackUrl )
         throws BuzzAuthenticationException
     {
-        return buzzOAuth.getAuthenticationUrl( SignatureMethod.HMAC_SHA1, scope, consumerKey, consumerSecret,
+// Made signpost 1.2.1.1 compliant
+//        return buzzOAuth.getAuthenticationUrl( SignatureMethod.HMAC_SHA1, scope, consumerKey, consumerSecret,
+//                                               callbackUrl );
+    
+        return buzzOAuth.getAuthenticationUrl(scope, consumerKey, consumerSecret,
                                                callbackUrl );
     }
 
@@ -116,6 +123,19 @@ public class Buzz
     {
         buzzOAuth.setAccessToken( accessToken );
     }
+    
+    /**
+     * Set the token / secret to be used for authentication.<br/>
+     * 
+     * @param accessToken to be used for authentication.
+     * @param tokenSecret to be used for authentication.
+     * @throws BuzzAuthenticationException if an OAuth problem occurs
+     */
+    public void setTokenWithSecret( String accessToken, String tokenSecret )
+   		throws BuzzAuthenticationException
+	{
+	    buzzOAuth.setTokenWithSecret( accessToken, tokenSecret );
+	}
 
     /**
      * Wrapper method for getting feeds. <br/>
@@ -136,6 +156,21 @@ public class Buzz
             return getPostsWithoutAuthentication( userId, feedType );
         }
         return getPostsWithAuthentication( userId, feedType );
+    }
+
+    public BuzzFeed search(String query)
+        throws BuzzIOException, BuzzAuthenticationException, BuzzParsingException
+    {
+     try {
+      String escapedQuery = new URI(null,null,null,query,null).toASCIIString().substring(1);
+      HttpsURLConnection request = BuzzIO.createRequest(
+                            BUZZ_URL_ACTIVITIES+"search?q="+escapedQuery);
+      buzzOAuth.signRequest( request );
+      String xmlResponse = BuzzIO.send( request );
+      return BuzzFeedParser.parseFeed( xmlResponse );
+     }catch(URISyntaxException ex){
+        throw new BuzzIOException(ex);
+     }
     }
 
     /**

@@ -6,8 +6,8 @@ import java.net.URLEncoder;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthProvider;
-import oauth.signpost.signature.SignatureMethod;
-
+// Made signpost 1.2.1.1 compliant
+//import oauth.signpost.signature.SignatureMethod;
 import com.google.buzz.exception.BuzzAuthenticationException;
 
 /**
@@ -53,21 +53,30 @@ public class BuzzOAuth
      * @param callbackUrl the url google should redirect the user after a successful login
      * @return the authentication url for the user to log in
      */
-    public String getAuthenticationUrl( SignatureMethod method, String scope, String consumerKey,
+// Made signpost 1.2.1.1 compliant
+//    public String getAuthenticationUrl( SignatureMethod method, String scope, String consumerKey,
+//                                        String consumerSecret, String callbackUrl )
+    public String getAuthenticationUrl( String scope, String consumerKey,
                                         String consumerSecret, String callbackUrl )
         throws BuzzAuthenticationException
     {
 
         String authUrl = null;
-        consumer = new DefaultOAuthConsumer( consumerKey, consumerSecret, method );
+// Made signpost 1.2.1.1 compliant
+//        consumer = new DefaultOAuthConsumer( consumerKey, consumerSecret, method );
+        consumer = new DefaultOAuthConsumer( consumerKey, consumerSecret);
 
         try
         {
-            provider = new DefaultOAuthProvider( consumer, GET_REQUEST_TOKEN_URL + "?scope="
+// Made signpost 1.2.1.1 compliant
+//            provider = new DefaultOAuthProvider( consumer, GET_REQUEST_TOKEN_URL + "?scope="
+            provider = new DefaultOAuthProvider(GET_REQUEST_TOKEN_URL + "?scope="
                 + URLEncoder.encode( scope, "utf-8" ), GET_ACCESS_TOKEN_URL, AUTHORIZE_TOKEN_URL + "?scope="
                 + URLEncoder.encode( scope, "utf-8" ) + "&domain=" + consumerKey );
 
-            authUrl = provider.retrieveRequestToken( callbackUrl );
+// Made signpost 1.2.1.1 compliant
+//            authUrl = provider.retrieveRequestToken( callbackUrl );
+            authUrl = provider.retrieveRequestToken(consumer, callbackUrl );
         }
         catch ( Exception e )
         {
@@ -87,13 +96,26 @@ public class BuzzOAuth
     {
         try
         {
-            provider.retrieveAccessToken( accessToken );
+// Made signpost 1.2.1.1 compliant
+//            provider.retrieveAccessToken( accessToken );
+            provider.retrieveAccessToken(consumer, accessToken );
         }
         catch ( Exception e )
         {
             throw new BuzzAuthenticationException( e );
         }
     }
+    
+    /**
+     * Set the token and secret to be used to authentication procedure.<br/>
+     * 
+     * @param accessToken
+     * @param tokenSecret
+     * @throws BuzzAuthenticationException if any OAuth error occurs
+     */
+    public void setTokenWithSecret(String accessToken, String tokenSecret) {
+		consumer.setTokenWithSecret(accessToken, tokenSecret);
+	}
 
     /**
      * Sign the request to be send. <br/>
