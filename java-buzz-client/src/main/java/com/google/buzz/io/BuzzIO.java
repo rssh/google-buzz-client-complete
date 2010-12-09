@@ -170,7 +170,22 @@ public class BuzzIO
         }
         catch ( Exception e )
         {
-            throw new BuzzIOException( e );
+            InputStream es = request.getErrorStream();
+            if (es==null) {
+               throw new BuzzIOException( e );
+            } else {
+               response = new StringBuffer();
+               byte[] b = new byte[BUFFER_SIZE];
+               try {
+                 for ( int n; ( n = es.read( b ) ) != -1; ) {
+                  response.append( new String( b, 0, n ) );
+                 }
+               }catch(IOException ex) {
+                  // suppress second-level exception.
+                  ;
+               }
+               throw new BuzzIOException(response.toString(),e);
+            }
         }
         return response.toString();
     }

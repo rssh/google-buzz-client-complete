@@ -33,4 +33,15 @@ public class BuzzIOException
     {
         super( message );
     }
+
+    /**
+     * Creates a BuzzException with a custom message and cause
+     * 
+     * @param message detail of the exception
+     */
+    public BuzzIOException( String message, Throwable cause )
+    {
+        super( message, cause );
+    }
+
 }
