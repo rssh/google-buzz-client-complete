@@ -595,17 +595,19 @@ public class Buzz
     { unlikePost("@me",postId); }
 
 
+    // yet not work: see 
+    //     http://code.google.com/p/google-buzz-api/issues/detail?id=134
     public BuzzFeedEntry resharePost(String userId,
                                      String postId, String annotation)
         throws BuzzIOException, BuzzAuthenticationException,
               BuzzValidationException, BuzzParsingException
     {
       HttpsURLConnection request = BuzzIO.createRequest( 
-               BUZZ_URL_ACTIVITIES +  userId+"/@self/",
+               BUZZ_URL_ACTIVITIES +  userId+"/@self",
                BuzzIO.HTTP_METHOD_POST);
       String payload = XMLGenerator.constructActivityIdPayload(postId, 
                                                                annotation);
-      System.err.println("payload="+payload);
+      //System.err.println("payload="+payload);
       request = BuzzIO.addBody(request, payload ); 
       buzzOAuth.signRequest( request );
       
