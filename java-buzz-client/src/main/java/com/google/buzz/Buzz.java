@@ -595,12 +595,13 @@ public class Buzz
     { unlikePost("@me",postId); }
 
 
-    public BuzzFeedEntry resharePost(String postId, String annotation)
+    public BuzzFeedEntry resharePost(String userId,
+                                     String postId, String annotation)
         throws BuzzIOException, BuzzAuthenticationException,
               BuzzValidationException, BuzzParsingException
     {
       HttpsURLConnection request = BuzzIO.createRequest( 
-               BUZZ_URL_ACTIVITIES +  "/@me/@self/",
+               BUZZ_URL_ACTIVITIES +  "/"+userId+"/@self/",
                BuzzIO.HTTP_METHOD_POST);
       String payload = XMLGenerator.constructActivityIdPayload(postId, 
                                                                annotation);
