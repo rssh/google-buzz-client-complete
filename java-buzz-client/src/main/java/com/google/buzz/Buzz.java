@@ -92,8 +92,9 @@ public class Buzz
 //        return buzzOAuth.getAuthenticationUrl( SignatureMethod.HMAC_SHA1, scope, consumerKey, consumerSecret,
 //                                               callbackUrl );
     
-        return buzzOAuth.getAuthenticationUrl(scope, consumerKey, consumerSecret,
-                                               callbackUrl );
+        return buzzOAuth.getAuthenticationUrl(scope, consumerKey, 
+                                              consumerSecret,
+                                              callbackUrl );
     }
 
     /**
@@ -136,6 +137,20 @@ public class Buzz
 	{
 	    buzzOAuth.setTokenWithSecret( accessToken, tokenSecret );
 	}
+
+
+    /**
+     * set consumer with known key and secret for given scope.
+     *@param consumerKey  consumerKey to be used for authentication.
+     *@param consumerToken  consumerToken to be used for authentication.
+     *@param scope - scope, for which we authenticate.
+     **/
+    public void setConsumerForScope(String consumerKey, String consumerSecret,
+                                    String scope)
+   		throws BuzzAuthenticationException
+     {
+         buzzOAuth.setConsumerForScope(consumerKey, consumerSecret, scope);
+     }
 
     /**
      * Wrapper method for getting feeds. <br/>

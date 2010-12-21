@@ -2,6 +2,7 @@ package com.google.buzz.oauth;
 
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
 
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthConsumer;
@@ -53,29 +54,16 @@ public class BuzzOAuth
      * @param callbackUrl the url google should redirect the user after a successful login
      * @return the authentication url for the user to log in
      */
-// Made signpost 1.2.1.1 compliant
-//    public String getAuthenticationUrl( SignatureMethod method, String scope, String consumerKey,
-//                                        String consumerSecret, String callbackUrl )
     public String getAuthenticationUrl( String scope, String consumerKey,
                                         String consumerSecret, String callbackUrl )
         throws BuzzAuthenticationException
     {
 
         String authUrl = null;
-// Made signpost 1.2.1.1 compliant
-//        consumer = new DefaultOAuthConsumer( consumerKey, consumerSecret, method );
-        consumer = new DefaultOAuthConsumer( consumerKey, consumerSecret);
 
+        setConsumerForScope(consumerKey, consumerSecret, scope);
         try
         {
-// Made signpost 1.2.1.1 compliant
-//            provider = new DefaultOAuthProvider( consumer, GET_REQUEST_TOKEN_URL + "?scope="
-            provider = new DefaultOAuthProvider(GET_REQUEST_TOKEN_URL + "?scope="
-                + URLEncoder.encode( scope, "utf-8" ), GET_ACCESS_TOKEN_URL, AUTHORIZE_TOKEN_URL + "?scope="
-                + URLEncoder.encode( scope, "utf-8" ) + "&domain=" + consumerKey );
-
-// Made signpost 1.2.1.1 compliant
-//            authUrl = provider.retrieveRequestToken( callbackUrl );
             authUrl = provider.retrieveRequestToken(consumer, callbackUrl );
         }
         catch ( Exception e )
@@ -83,6 +71,25 @@ public class BuzzOAuth
             throw new BuzzAuthenticationException( e );
         }
         return authUrl;
+    }
+
+    public void setConsumerForScope(String consumerKey, 
+                                    String consumerSecret,
+                                    String scope) 
+        throws BuzzAuthenticationException
+    {
+      try {
+       consumer = new DefaultOAuthConsumer( consumerKey, consumerSecret);
+       provider = new DefaultOAuthProvider(
+                          GET_REQUEST_TOKEN_URL + "?scope="
+                              + URLEncoder.encode( scope, "utf-8" ), 
+                          GET_ACCESS_TOKEN_URL, AUTHORIZE_TOKEN_URL + "?scope="
+                              + URLEncoder.encode( scope, "utf-8" ) 
+                                   + "&domain=" + consumerKey );
+     } catch (UnsupportedEncodingException ex) {
+         // impossible.
+         throw new BuzzAuthenticationException("excepton dring setting provider",ex);
+     }
     }
 
     /**

@@ -33,4 +33,15 @@ public class BuzzAuthenticationException
     {
         super( message );
     }
+
+    /**
+     * Creates a BuzzException with a custom message and cause
+     * 
+     * @param message detail of the exception
+     */
+    public BuzzAuthenticationException( String message, Throwable e )
+    {
+        super( message, e );
+    }
+
 }
