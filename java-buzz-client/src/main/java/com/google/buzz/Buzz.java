@@ -642,6 +642,23 @@ public class Buzz
     {
     }
 
+    public List<BuzzUserProfile> searchPeople(String query)
+        throws BuzzIOException, BuzzAuthenticationException, BuzzParsingException
+    {
+     try {
+      String escapedQuery = new URI(null,null,null,query,null).toASCIIString().substring(1);
+      HttpsURLConnection request = BuzzIO.createRequest(
+                            BUZZ_URL_PEOPLE+"search?q="+escapedQuery);
+      buzzOAuth.signRequest( request );
+      String xmlResponse = BuzzIO.send( request );
+      return BuzzUsersProfilesParser.parseUsersProfiles( xmlResponse );
+     }catch(URISyntaxException ex){
+        throw new BuzzIOException(ex);
+     }
+    }
+
+
+
     public void suggestedUsers()
     {
     }
