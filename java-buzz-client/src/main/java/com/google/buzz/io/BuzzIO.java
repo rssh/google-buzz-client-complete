@@ -1,7 +1,9 @@
 package com.google.buzz.io;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.Map;
@@ -153,20 +155,13 @@ public class BuzzIO
     public static String send( HttpsURLConnection request )
         throws BuzzIOException
     {
-        StringBuffer response = null;
+	//StringBuilder response = null;
+        String response = null;
         try
         {
-            // Send request
             request.connect();
-
-            // Read response
             InputStream is = request.getInputStream();
-            response = new StringBuffer();
-            byte[] b = new byte[BUFFER_SIZE];
-            for ( int n; ( n = is.read( b ) ) != -1; )
-            {
-                response.append( new String( b, 0, n ) );
-            }
+            response = inputStreamToString(is,"UTF-8");
         }
         catch ( Exception e )
         {
@@ -174,19 +169,35 @@ public class BuzzIO
             if (es==null) {
                throw new BuzzIOException( e );
             } else {
-               response = new StringBuffer();
-               byte[] b = new byte[BUFFER_SIZE];
                try {
-                 for ( int n; ( n = es.read( b ) ) != -1; ) {
-                  response.append( new String( b, 0, n ) );
-                 }
+                 response = inputStreamToString(es,"UTF-8");
                }catch(IOException ex) {
                   // suppress second-level exception.
                   ;
                }
-               throw new BuzzIOException(response.toString(),e);
+               throw new BuzzIOException(response,e);
             }
         }
         return response.toString();
     }
+
+    public static String inputStreamToString(InputStream is, String encoding) 
+                                                           throws IOException 
+    {
+      InputStreamReader in;
+      if (encoding == null)
+          in = new InputStreamReader(is);
+      else
+         in = new InputStreamReader(is, encoding);
+
+      BufferedReader br = new BufferedReader(in);
+      String line = "";
+      StringBuilder sb = new StringBuilder();
+      while ((line = br.readLine()) != null)
+                        sb.append(line);
+
+      return sb.toString();
+   }
+
+
 }
