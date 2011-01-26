@@ -37,6 +37,8 @@ public class BuzzTest
  }
 
 
+/*
+ *   see http://code.google.com/p/google-buzz-api/issues/detail?id=134
  @Test public void testReadAndReshare() throws Exception
  {
    BuzzFeed feed = buzz.getPosts("@me",BuzzFeed.Type.CONSUMPTION);
@@ -49,6 +51,7 @@ public class BuzzTest
     Assert.assertTrue(reshareEntry!=null);
    }
  }
+*/
 
  private Buzz buzz=null;
 
