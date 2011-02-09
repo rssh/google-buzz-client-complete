@@ -75,7 +75,11 @@ public class ContentHandler
     {
         String s = new String( ch ).substring( start, start + length );
         String prev = content.getText();
-        content.setText( prev + s);
+        if (prev==null) {
+          content.setText(s);
+        } else {
+          content.setText( prev + s);
+        }
     }
 
 }
