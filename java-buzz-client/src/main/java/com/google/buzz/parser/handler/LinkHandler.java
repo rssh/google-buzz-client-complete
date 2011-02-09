@@ -20,7 +20,8 @@ public class LinkHandler
     private static final String HREF = "href";
     private static final String REL = "rel";
     private static final String TYPE = "type";
-    private static final String COUNT = "buzz:count";
+    private static final String BUZZ_COUNT = "buzz:count";
+    private static final String THR_COUNT = "thr:count";
 
     /**
      * Object to return
@@ -61,7 +62,10 @@ public class LinkHandler
         String type = attributes.getValue( TYPE );
         if ( type != null && !type.equals( "" ) )
             link.setType( type );
-        String count = attributes.getValue( COUNT );
+        String count = attributes.getValue( BUZZ_COUNT );
+        if ( count != null && !count.equals( "" ) )
+            link.setCount( Integer.valueOf( count ) );
+        count = attributes.getValue( THR_COUNT );
         if ( count != null && !count.equals( "" ) )
             link.setCount( Integer.valueOf( count ) );
     }
