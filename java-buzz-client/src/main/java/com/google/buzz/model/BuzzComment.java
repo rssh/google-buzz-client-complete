@@ -199,8 +199,16 @@ public class BuzzComment
         sb.append( newIndent + "Published: " + published );
         sb.append( newIndent + "Id: " + id );
         sb.append( newIndent + "Author: " + author.toString( newIndent + "\t" ) );
-        sb.append( newIndent + "Content: " + content.toString( newIndent + "\t" ) );
-        sb.append( newIndent + "Original Content: " + originalContent.toString( newIndent + "\t" ) );
+        if (content!=null) {
+           sb.append( newIndent + "Content: " + content.toString( newIndent + "\t" ) );
+        } else {
+           sb.append( newIndent + "Content: null" );
+        }
+        if (originalContent!=null) {
+            sb.append( newIndent + "Original Content: " + originalContent.toString( newIndent + "\t" ) );
+        } else {
+           sb.append( newIndent + "OriginalContent: null" );
+        }
         for ( int i = 0; i < links.size(); i++ )
         {
             sb.append( links.get( i ).toString( newIndent + "\t" ) );
