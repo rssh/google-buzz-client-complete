@@ -108,7 +108,13 @@ public class CommentHandler
             authorHandler.startHandlingEvents();
             authorHandler.startElement( uri, name, qName, attributes );
         }
-        else if ( CONTENT.equals( name ) || ORIGINAL_CONTENT.equals( qName ) )
+        else if ( CONTENT.equals( name ) ) 
+        {
+            contentHandler = new ContentHandler( this );
+            contentHandler.startHandlingEvents();
+            contentHandler.startElement( uri, name, qName, attributes );
+        }
+        else if ( ORIGINAL_CONTENT.equals( name ) ) 
         {
             contentHandler = new ContentHandler( this );
             contentHandler.startHandlingEvents();
@@ -149,9 +155,13 @@ public class CommentHandler
         {
             comment.setAuthor( authorHandler.getBuzzAuthor() );
         }
-        else if ( CONTENT.equals( name ) || ORIGINAL_CONTENT.equals( qName ) )
+        else if ( CONTENT.equals( name ) )
         {
             comment.setContent( contentHandler.getBuzzContent() );
+        }
+        else if ( ORIGINAL_CONTENT.equals( name ) ) 
+        {
+            comment.setOriginalContent( contentHandler.getBuzzContent() );
         }
         else if ( LINK.equals( name ) )
         {
