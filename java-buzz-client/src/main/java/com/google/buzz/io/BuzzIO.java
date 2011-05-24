@@ -129,7 +129,9 @@ public class BuzzIO
             if ( body != null && !body.equals( "" ) )
             {
                 request.setRequestProperty( HEADER_CONTENT_LENGTH, String.valueOf( body.length() ) );
-                request.setRequestProperty( HEADER_CONTENT_TYPE, "application/atom+xml" );
+                if (request.getRequestProperty(HEADER_CONTENT_TYPE)==null) {
+                  request.setRequestProperty( HEADER_CONTENT_TYPE, "application/atom+xml" );
+                }
                 request.setDoOutput( true );
                 OutputStream outStream = request.getOutputStream();
                 outStream.write( body.getBytes() );
