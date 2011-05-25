@@ -7,6 +7,7 @@ import java.io.UnsupportedEncodingException;
 import oauth.signpost.OAuthProvider;
 import oauth.signpost.basic.DefaultOAuthConsumer;
 import oauth.signpost.basic.DefaultOAuthProvider;
+import oauth.signpost.commonshttp.CommonsHttpOAuthProvider;
 // Made signpost 1.2.1.1 compliant
 //import oauth.signpost.signature.SignatureMethod;
 import com.google.buzz.exception.BuzzAuthenticationException;
@@ -44,6 +45,8 @@ public class BuzzOAuth
      */
     private OAuthProvider provider;
 
+    private String        refreshToken;
+
     /**
      * This page is going to be used by the user to allow third parties applications access his/her
      * Google Buzz information and activities.
@@ -80,7 +83,9 @@ public class BuzzOAuth
     {
       try {
        consumer = new DefaultOAuthConsumer( consumerKey, consumerSecret);
-       provider = new DefaultOAuthProvider(
+       //provider = new DefaultOAuthProvider(
+       // see http://code.google.com/p/oauth-signpost/issues/detail?id=60
+       provider = new CommonsHttpOAuthProvider(
                           GET_REQUEST_TOKEN_URL + "?scope="
                               + URLEncoder.encode( scope, "utf-8" ), 
                           GET_ACCESS_TOKEN_URL, AUTHORIZE_TOKEN_URL + "?scope="
@@ -113,6 +118,11 @@ public class BuzzOAuth
         }
     }
     
+    public void setRefreshToken(String refreshToken)
+    {
+      this.refreshToken = refreshToken;
+    }
+
     /**
      * Set the token and secret to be used to authentication procedure.<br/>
      * 

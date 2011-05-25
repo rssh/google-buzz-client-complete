@@ -4,7 +4,7 @@
 	<groupId>com.google.buzz</groupId>
 	<artifactId>java-buzz-client-rssh</artifactId>
 	<packaging>jar</packaging>
-	<version>0.4.5</version>
+	<version>0.4.7</version>
 	<name>java-buzz-client-rssh</name>
 	<repositories>
 		<repository>
@@ -37,6 +37,12 @@
 		<dependency>
 			<groupId>oauth.signpost</groupId>
 			<artifactId>signpost-core</artifactId>
+			<version>1.2.1.1</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>oauth.signpost</groupId>
+			<artifactId>signpost-commonshttp4</artifactId>
 			<version>1.2.1.1</version>
 			<scope>compile</scope>
 		</dependency>
