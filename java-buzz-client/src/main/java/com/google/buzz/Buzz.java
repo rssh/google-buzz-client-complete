@@ -25,6 +25,8 @@ import com.google.buzz.model.BuzzFeedEntry;
 import com.google.buzz.model.BuzzLink;
 import com.google.buzz.model.BuzzUserProfile;
 import com.google.buzz.oauth.BuzzOAuth;
+import com.google.buzz.oauth.BuzzOAuth1;
+import com.google.buzz.oauth.BuzzOAuth2;
 import com.google.buzz.parser.BuzzCommentParser;
 import com.google.buzz.parser.BuzzCommentsParser;
 import com.google.buzz.parser.BuzzFeedEntryParser;
@@ -70,7 +72,27 @@ public class Buzz
      */
     public Buzz()
     {
-        buzzOAuth = new BuzzOAuth();
+        buzzOAuth = null;
+    }
+
+    public void setOAuthVersion(int version)
+    {
+     switch(version) {
+       case 1: buzzOAuth = new BuzzOAuth1();
+               break;
+       case 2: buzzOAuth = new BuzzOAuth2();
+               break;
+       default:
+               throw new IllegalArgumentException("oauth version must be 1 or 2");
+     }
+    }
+
+    private BuzzOAuth getBuzzOAuth()
+    {
+     if (buzzOAuth==null) {
+         buzzOAuth=new BuzzOAuth2();
+     }
+     return buzzOAuth;
     }
 
     /**
@@ -92,7 +114,7 @@ public class Buzz
 //        return buzzOAuth.getAuthenticationUrl( SignatureMethod.HMAC_SHA1, scope, consumerKey, consumerSecret,
 //                                               callbackUrl );
     
-        return buzzOAuth.getAuthenticationUrl(scope, consumerKey, 
+        return getBuzzOAuth().getAuthenticationUrl(scope, consumerKey, 
                                               consumerSecret,
                                               callbackUrl );
     }
@@ -114,17 +136,18 @@ public class Buzz
     }
 
     /**
-     * Set the access token to be used in the request signature.<br/>
+     * retrieve the access token to be used in the request signature.<br/>
      * 
      * @param accessToken to be used in the request signing process.
      * @throws BuzzAuthenticationException if an OAuth problem occurs
      */
-    public void setAccessToken( String accessToken )
+    public void retrieveAccessToken( String oauthVerifier, String callback )
         throws BuzzAuthenticationException
     {
-        buzzOAuth.setAccessToken( accessToken );
+        getBuzzOAuth().retrieveAccessToken( oauthVerifier, callback );
     }
     
+
     /**
      * Set the token / secret to be used for authentication.<br/>
      * 
@@ -135,7 +158,7 @@ public class Buzz
     public void setTokenWithSecret( String accessToken, String tokenSecret )
    		throws BuzzAuthenticationException
 	{
-	    buzzOAuth.setTokenWithSecret( accessToken, tokenSecret );
+	    getBuzzOAuth().setTokenWithSecret( accessToken, tokenSecret );
 	}
 
 
@@ -149,7 +172,7 @@ public class Buzz
                                     String scope)
    		throws BuzzAuthenticationException
      {
-         buzzOAuth.setConsumerForScope(consumerKey, consumerSecret, scope);
+         getBuzzOAuth().setConsumerForScope(consumerKey, consumerSecret, scope);
      }
 
     /**

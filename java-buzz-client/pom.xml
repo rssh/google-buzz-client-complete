@@ -4,7 +4,7 @@
 	<groupId>com.google.buzz</groupId>
 	<artifactId>java-buzz-client-rssh</artifactId>
 	<packaging>jar</packaging>
-	<version>0.4.7</version>
+	<version>0.5.0</version>
 	<name>java-buzz-client-rssh</name>
 	<repositories>
 		<repository>
@@ -51,6 +51,11 @@
 			<artifactId>sax</artifactId>
 			<version>2.0.1</version>
 		</dependency>
+                <dependency>
+                  <groupId>com.googlecode.json-simple</groupId>
+                  <artifactId>json-simple</artifactId>
+                  <version>1.1</version>
+                </dependency>
 	</dependencies>
 	<build>
 		<finalName>java-buzz-client-rssh</finalName>
