@@ -87,7 +87,7 @@ public class Buzz
      }
     }
 
-    private BuzzOAuth getBuzzOAuth()
+    public BuzzOAuth getBuzzOAuth()
     {
      if (buzzOAuth==null) {
          buzzOAuth=new BuzzOAuth2();
@@ -118,6 +118,7 @@ public class Buzz
                                               consumerSecret,
                                               callbackUrl );
     }
+
 
     /**
      * Convinient method overloading for non-web applications.<br/>

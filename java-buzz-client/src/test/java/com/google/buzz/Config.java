@@ -9,4 +9,6 @@ public class Config
  static final String buzzConsumerKey="anonymous";
  static final String buzzConsumerSecret="anonymous";
 
+ static final String buzzToken2="1/_HkgEIL7LZfx3iL0oVj6L8XniPzDS_g8qkH4VKUEqV0";
+
 }

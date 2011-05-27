@@ -19,6 +19,7 @@ public class BuzzTest
  {
    if (buzz==null) {
      buzz = new Buzz();
+     buzz.setOAuthVersion(1);
      buzz.setConsumerForScope(Config.buzzConsumerKey,
                               Config.buzzConsumerSecret,
                               Buzz.BUZZ_SCOPE_WRITE);
