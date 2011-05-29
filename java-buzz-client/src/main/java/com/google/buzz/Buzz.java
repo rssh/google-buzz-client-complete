@@ -95,6 +95,12 @@ public class Buzz
      return buzzOAuth;
     }
 
+    public void  setBuzzOAuth(BuzzOAuth newBuzzOAuth)
+    {
+       buzzOAuth=newBuzzOAuth;
+    }
+
+
     /**
      * Method to obtain the Google user authentication web page. <br/>
      * This page is going to be used by the user to allow third parties applications access his/her

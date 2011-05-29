@@ -162,6 +162,14 @@ public class BuzzOAuth2 implements BuzzOAuth
     }
 
     /**
+     * set expire time in milliseconds.
+     **/
+    public void setExpireTime(long expireTime)
+    {
+      this.refreshToken = refreshToken;
+    }
+
+    /**
      * Set the token and secret to be used to authentication procedure.<br/>
      * 
      * @param accessToken

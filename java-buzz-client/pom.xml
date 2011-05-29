@@ -4,7 +4,7 @@
 	<groupId>com.google.buzz</groupId>
 	<artifactId>java-buzz-client-rssh</artifactId>
 	<packaging>jar</packaging>
-	<version>0.5.1</version>
+	<version>0.5.2</version>
 	<name>java-buzz-client-rssh</name>
 	<repositories>
 		<repository>
