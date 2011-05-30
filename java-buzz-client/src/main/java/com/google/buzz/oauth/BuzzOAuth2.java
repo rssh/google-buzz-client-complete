@@ -93,12 +93,12 @@ public class BuzzOAuth2 implements BuzzOAuth
           cn.setRequestProperty("Content-Type","application/x-www-form-urlencoded");
           StringBuilder sb = new StringBuilder();
           if (code!=null) {
-            sb.append("code=").append(URLEncoder.encode(code,"utf8")).append("&");
+            sb.append("code=").append(URLEncoder.encode(code,"UTF-8")).append("&");
           }
-          sb.append("cliend_id=").append(URLEncoder.encode(consumerKey,"utf8")).append("&")
-          .append("client_secret=").append(URLEncoder.encode(consumerSecret,"uft8")).append("&");
+          sb.append("cliend_id=").append(URLEncoder.encode(consumerKey,"UTF-8")).append("&")
+          .append("client_secret=").append(URLEncoder.encode(consumerSecret,"UTF-8")).append("&");
           if (redirectUri!=null) {
-            sb.append("redirect_uri=").append(URLEncoder.encode(redirectUri,"utf8")).append("&");
+            sb.append("redirect_uri=").append(URLEncoder.encode(redirectUri,"UTF-8")).append("&");
           }
           sb.append("grant_type=").append(grant_type);
           BuzzIO.addBody(cn,sb.toString());
@@ -128,7 +128,7 @@ public class BuzzOAuth2 implements BuzzOAuth
         } catch(IllegalArgumentException ex) {
            throw new BuzzAuthenticationException("Can't retrieve token:"+ex.getMessage(),ex);
         } catch(UnsupportedEncodingException ex) {
-           throw new BuzzAuthenticationException("Can't retrieve token:"+ex.getMessage(),ex);
+           throw new BuzzAuthenticationException("Can't retrieve token: unsupported encodeing:"+ex.getMessage(),ex);
         } catch(ParseException ex) {
            throw new BuzzAuthenticationException("Can't retrieve token:"+ex.getMessage(),ex);
         }
