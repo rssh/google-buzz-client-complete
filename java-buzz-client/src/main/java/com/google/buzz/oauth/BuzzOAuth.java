@@ -48,6 +48,18 @@ public interface BuzzOAuth
     public void setTokenWithSecret(String accessToken, String tokenSecret);
 
     /**
+     * get token
+     **/
+    public String getToken();
+
+    /**
+     * get token secret.  
+     * This is tokenSecret for OAuth 1 and refreshTpken for
+     *                   
+     **/
+    public String getTokenSecret();
+
+    /**
      * Sign the request to be send. <br/>
      * <b>BuzzOAuth.retrieveAccessToken</b> method should be called before this method.
      * 

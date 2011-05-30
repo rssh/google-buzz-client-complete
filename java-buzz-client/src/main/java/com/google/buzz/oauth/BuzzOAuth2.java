@@ -35,6 +35,7 @@ public class BuzzOAuth2 implements BuzzOAuth
     private long          expireTime;
     private String        consumerKey;
     private String        consumerSecret;
+    private String        redirectUri;
 
     public  int           getOAuthVersion()
      { return 2; }
@@ -58,6 +59,7 @@ public class BuzzOAuth2 implements BuzzOAuth
         params.put("client_id",consumerKey);
         this.consumerKey = consumerKey;
         this.consumerSecret = consumerSecret;
+        this.redirectUri=redirectUri;
         params.put("redirect_uri",callbackUrl);
         params.put("scope",scope);
         params.put("response_type","code");
@@ -80,7 +82,7 @@ public class BuzzOAuth2 implements BuzzOAuth
     public void  doRefreshTokenRequest()
         throws BuzzAuthenticationException
     {
-     doTokenRequest(REFRESH_TOKEN,null,null);
+     doTokenRequest(REFRESH_TOKEN,null,redirectUri);
     }
 
     private void doTokenRequest(String grant_type, String code, String redirectUri)
@@ -95,17 +97,22 @@ public class BuzzOAuth2 implements BuzzOAuth
           if (code!=null) {
             sb.append("code=").append(URLEncoder.encode(code,"UTF-8")).append("&");
           }
-          sb.append("cliend_id=").append(URLEncoder.encode(consumerKey,"UTF-8")).append("&")
-          .append("client_secret=").append(URLEncoder.encode(consumerSecret,"UTF-8")).append("&");
+          sb.append("client_id=").append(URLEncoder.encode(consumerKey,"UTF-8")).append("&");
+          //if (grant_type.equals(AUTHORIZATION_CODE)) {
+            sb.append("client_secret=").append(URLEncoder.encode(consumerSecret,"UTF-8")).append("&");
+          //}
           if (redirectUri!=null) {
             sb.append("redirect_uri=").append(URLEncoder.encode(redirectUri,"UTF-8")).append("&");
+          }
+          if (grant_type.equals(REFRESH_TOKEN)) {
+            sb.append("refresh_token=").append(URLEncoder.encode(refreshToken,"UTF-8")).append("&");
           }
           sb.append("grant_type=").append(grant_type);
           BuzzIO.addBody(cn,sb.toString());
           String sr = BuzzIO.send(cn);
           Object oJsonObject = JSONValue.parseWithException(sr);
           JSONObject jsonObject=null;
-          if (oJsonObject instanceof JSONValue) {
+          if (oJsonObject instanceof JSONObject) {
              jsonObject = (JSONObject)oJsonObject;
           } else {
              throw new IllegalArgumentException("received reply for authorization token is not complex json:"+oJsonObject);
@@ -121,7 +128,7 @@ public class BuzzOAuth2 implements BuzzOAuth
           }
           if (oExpiresIn!=null) {
             long now = System.currentTimeMillis();
-            this.expireTime = now + ((Integer)oExpiresIn)*1000L; 
+            this.expireTime = now + ((Long)oExpiresIn)*1000L; 
           }
         } catch(BuzzIOException ex) {
            throw new BuzzAuthenticationException("Can't retrieve token:"+ex.getMessage(),ex);
@@ -166,7 +173,15 @@ public class BuzzOAuth2 implements BuzzOAuth
      **/
     public void setExpireTime(long expireTime)
     {
-      this.refreshToken = refreshToken;
+      this.expireTime = expireTime;
+    }
+
+    public String getRedirectUri()
+    { return redirectUri; }
+
+    public void setRedirectUri(String redirectUri)
+    {
+      this.redirectUri=redirectUri;
     }
 
     /**
@@ -180,6 +195,24 @@ public class BuzzOAuth2 implements BuzzOAuth
 		this.accessToken=accessToken;
                 this.refreshToken=tokenSecret;
     }
+
+    /**
+     * return access token.
+     **/
+    public String getToken()
+    {
+     return this.accessToken;
+    }
+
+    /**
+     * return refresh token.
+     **/
+    public String getTokenSecret()
+    {
+     return this.refreshToken;
+    }
+
+
 
     /**
      * Sign the request to be send. <br/>

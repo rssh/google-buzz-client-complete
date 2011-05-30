@@ -152,7 +152,7 @@ public class BuzzOAuth1 implements BuzzOAuth
     }
 
 
-    public String getAccessToken()
+    public String getToken()
     { return consumer.getToken(); }
 
     public String getTokenSecret()

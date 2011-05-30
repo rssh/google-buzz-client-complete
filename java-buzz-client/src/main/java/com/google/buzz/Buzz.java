@@ -97,7 +97,7 @@ public class Buzz
 
     public void  setBuzzOAuth(BuzzOAuth newBuzzOAuth)
     {
-       buzzOAuth=newBuzzOAuth;
+       this.buzzOAuth=newBuzzOAuth;
     }
 
 
